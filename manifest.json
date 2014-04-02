@@ -1,0 +1,15 @@
+{
+  "name": "hello-world",
+  "version": "0.1.2",
+  "title": "Hello, World",
+  "description": "Demo gadget showing the basic API",
+  "author": "versal",
+  "launcher": "iframe",
+  "defaultConfig": {
+      "chosenColor" : "#00cc00",
+      "chosenWord" : "green"
+  },
+  "defaultUserState": {
+      "isBold" : false
+  }
+}
