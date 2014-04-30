@@ -38,7 +38,7 @@
   Gadget.prototype.sendMessage = function (messageJson) {
     console.log('Sending message', messageJson);
     // an outgoing message has the structure {event: 'eventName', data: ... }
-    window.parent.postMessage(messageJson, window.location.origin);
+    window.parent.postMessage(messageJson, '*');
   };
 
   // Need to configure the property sheet after attaching.
