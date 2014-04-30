@@ -56,6 +56,7 @@
   // Initialize: before the gadget is attached to the lesson's DOM.
   Gadget.prototype.initialize = function() {
       // subscribe to player events.
+      this.sendMEssage({event: 'startListening'});
       window.addEventListener('message', this.receiveMessage.bind(this));
 
       this.setupPropertySheet();
