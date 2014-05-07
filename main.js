@@ -38,7 +38,7 @@
   Gadget.prototype.sendMessage = function (messageJson) {
     console.log('Sending message', messageJson);
     // an outgoing message has the structure {event: 'eventName', data: ... }
-    window.parent.postMessage(messageJson, window.location.origin);
+    window.parent.postMessage(messageJson, '*');
   };
 
   // Need to configure the property sheet after attaching.
@@ -56,6 +56,7 @@
   // Initialize: before the gadget is attached to the lesson's DOM.
   Gadget.prototype.initialize = function() {
       // subscribe to player events.
+      this.sendMessage({event: 'startListening'});
       window.addEventListener('message', this.receiveMessage.bind(this));
 
       this.setupPropertySheet();
