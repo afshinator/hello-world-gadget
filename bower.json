@@ -1,0 +1,19 @@
+{
+  "name": "hello-world-gadget",
+  "version": "0.0.1",
+  "homepage": "https://github.com/Versal/gadget-dev-intro",
+  "authors": [
+    "sergei@versal.com"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "versal-player-api": "~0.3.3"
+  }
+}
