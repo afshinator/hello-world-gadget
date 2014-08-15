@@ -50,6 +50,24 @@
       // add click listener to toggle bold font.
       this.wordEl.onclick = this.toggleBoldWord.bind(this);
 
+      // for assets
+      this.vi.on('assetSelected', function(assetData){
+        var assetUrl = this.vi.assetUrl(assetData.asset.representations[0].id);
+
+        //change local image
+        this.setImagePath({
+          url: assetUrl
+        });
+
+        //persist
+        this.vi.setAttributes({
+          chosenImage : {
+            url: assetUrl,
+            assetObj: assetData
+          }
+        });
+      }.bind(this));
+
       // add click listener to upload new asset.
       this.el.querySelector('.button-upload-image').onclick = this.requestUpload.bind(this);
 
@@ -62,12 +80,9 @@
   };
 
   Gadget.prototype.requestUpload = function() {
-    this.sendMessage({
-      event: 'requestAsset',
-      data: {
-        attribute: 'chosenImage',
-        type: 'image'
-      }
+    this.vi.requestAsset({
+      attribute: 'tmpImage',
+      type: 'image'
     });
   };
 
@@ -87,29 +102,13 @@
     }
   };
 
-  // this will request an image URL.
-  Gadget.prototype.updateImage = function() {
-    if (this.config.authorState.asset) {
-      // for simplicity, we will always use the first representation in the asset.
-      var imageId = this.config.authorState.asset.representations[0].id;
-      this.sendMessage({
-        event: 'getPath',
-        data: {
-          messageId: 1,
-          assetId: imageId
-        }
-      });
-    }
-  };
-
-  Gadget.prototype.setPath = function(jsonData) {
+  Gadget.prototype.setImagePath = function(jsonData) {
     var imageUrl = jsonData.url;
     // now we set the image src attribute to this url.
     this.el.querySelector('.sample-image').setAttribute('src', imageUrl);
   };
 
   Gadget.prototype.attributesChanged = function(jsonData) {
-
     // we expect only the attributes 'chosenColor', 'chosenWord', 'chosenImage'.
     if (jsonData.chosenColor) {
       this.config.authorState.chosenColor = jsonData.chosenColor;
@@ -121,7 +120,7 @@
     }
     if (jsonData.chosenImage) {
       this.config.authorState.asset = jsonData.chosenImage;
-      this.updateImage();
+      this.setImagePath(jsonData.chosenImage);
     }
 
   };
