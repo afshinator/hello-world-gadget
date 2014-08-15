@@ -23,3 +23,9 @@ about gadget development.
 bower install
 ```
 
+### Preview gadget
+
+```
+versal preview
+```
+
