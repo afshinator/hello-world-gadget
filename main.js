@@ -11,16 +11,19 @@
     // the selected word
     this.wordEl = this.el.querySelector('span.adjective');
 
-    // the gadget's internal state, including the default values of all attributes and learner state.
+    // the gadget's configuration, consistent for anyone viewing each instance of this gadget
     this.config = {
-      isEditable: false,
-      authorState: {
-        chosenColor: 'green',
-        chosenWord: 'green'
-      },
-      learnerState: {
-        isBold: false       // whether the learner has made the chosen word bold.
-      }
+      chosenColor: 'green',
+      chosenWord: 'green'
+    };
+
+    // Internal state of the gadget. Only authors can edit gadgets
+    //   - When editing, config can be changed by the author
+    this.isEditable = false;
+
+    // State of the gadget, unique to the gadget instance AND each specific learner using the gadget
+    this.learnerState = {
+      isBold: false
     };
 
     this.initialize();
@@ -89,10 +92,10 @@
   // Methods that respond to some player events. Other events will be ignored by this gadget.
 
   Gadget.prototype.setEditable = function(jsonData) {
-    this.config.isEditable = jsonData.editable;
+    this.isEditable = jsonData.editable;
 
     // some elements have class 'authoring-only' and need to be hidden when we are in non-editable mode.
-    var visibilityForAuthor = this.config.isEditable ? 'visible' : 'hidden';
+    var visibilityForAuthor = this.isEditable ? 'visible' : 'hidden';
 
     // set visibility on all such elements.
     var elementsAuthoringOnly = document.getElementsByClassName('authoring-only');
@@ -111,15 +114,15 @@
   Gadget.prototype.attributesChanged = function(jsonData) {
     // we expect only the attributes 'chosenColor', 'chosenWord', 'chosenImage'.
     if (jsonData.chosenColor) {
-      this.config.authorState.chosenColor = jsonData.chosenColor;
-      this.wordEl.setAttribute('style', 'color: ' + this.config.authorState.chosenColor);
+      this.config.chosenColor = jsonData.chosenColor;
+      this.wordEl.setAttribute('style', 'color: ' + this.config.chosenColor);
     }
     if (jsonData.chosenWord) {
-      this.config.authorState.chosenWord = jsonData.chosenWord;
-      this.wordEl.innerHTML = this.config.authorState.chosenWord;
+      this.config.chosenWord = jsonData.chosenWord;
+      this.wordEl.innerHTML = this.config.chosenWord;
     }
     if (jsonData.chosenImage) {
-      this.config.authorState.asset = jsonData.chosenImage;
+      this.config.asset = jsonData.chosenImage;
       this.setImagePath(jsonData.chosenImage);
     }
 
@@ -128,13 +131,13 @@
   Gadget.prototype.learnerStateChanged = function(jsonData) {
     // we expect only the attribute 'isBold'.
     if (jsonData.isBold) {
-      this.config.learnerState.isBold = jsonData.isBold;
+      this.learnerState.isBold = jsonData.isBold;
       this.updateBoldWord();
     }
   };
 
   Gadget.prototype.updateBoldWord = function() {
-    if (this.config.learnerState.isBold) {
+    if (this.learnerState.isBold) {
       addClassToElement(this.el, 'setBold');
     } else {
       removeClassFromElement(this.el, 'setBold');
@@ -142,9 +145,9 @@
   };
 
   Gadget.prototype.toggleBoldWord = function() {
-    this.config.learnerState.isBold = ! this.config.learnerState.isBold;
+    this.learnerState.isBold = ! this.learnerState.isBold;
     this.vi.setLearnerState({
-      isBold: this.config.learnerState.isBold
+      isBold: this.learnerState.isBold
     });
     this.updateBoldWord();
   };
