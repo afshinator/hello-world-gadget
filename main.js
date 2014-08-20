@@ -1,9 +1,9 @@
 (function(){
-  /* global VersalPlayerAPI */
+  /* global VersalPlayerAPI, addClassToElement, removeClassFromElement, ChallengesIframeApi */
 
   // Declare a gadget class.
   var Gadget = function(options) {
-    // versal interface
+    // versal interface which fires most events
     this.vi = new VersalPlayerAPI();
 
     // the main DOM element for attaching
@@ -40,79 +40,65 @@
 
   // Initialize: before the gadget is attached to the lesson's DOM.
   Gadget.prototype.initialize = function() {
-      //
-      this.vi.on('attributesChanged', this.attributesChanged.bind(this));
-      this.vi.on('learnerStateChanged', this.learnerStateChanged.bind(this));
+    // listen to events
+    this.vi.on('editableChanged', this.editableChanged.bind(this));
+    this.vi.on('attributesChanged', this.attributesChanged.bind(this));
+    this.vi.on('learnerStateChanged', this.learnerStateChanged.bind(this));
 
+    this.setupPropertySheet();
 
-      this.setupPropertySheet();
+    // tell Versal the gadget is ready for events
+    this.vi.startListening();
 
-      // subscribe to player events.
-      this.vi.startListening();
+    // add click listener to toggle bold font.
+    this.wordEl.onclick = this.toggleBoldWord.bind(this);
 
-      // add click listener to toggle bold font.
-      this.wordEl.onclick = this.toggleBoldWord.bind(this);
+    // for assets
+    this.vi.on('assetSelected', function(assetData){
+      var assetUrl = this.vi.assetUrl(assetData.asset.representations[0].id);
 
-      // for assets
-      this.vi.on('assetSelected', function(assetData){
-        var assetUrl = this.vi.assetUrl(assetData.asset.representations[0].id);
+      //change local image
+      this.setImagePath({
+        url: assetUrl
+      });
 
-        //change local image
-        this.setImagePath({
-          url: assetUrl
-        });
+      //persist
+      this.vi.setAttributes({
+        chosenImage : {
+          url: assetUrl,
+          assetObj: assetData
+        }
+      });
+    }.bind(this));
 
-        //persist
-        this.vi.setAttributes({
-          chosenImage : {
-            url: assetUrl,
-            assetObj: assetData
-          }
-        });
-      }.bind(this));
+    // add click listener to upload new asset.
+    this.el.querySelector('.button-upload-image').onclick = this.requestUpload.bind(this);
 
-      // add click listener to upload new asset.
-      this.el.querySelector('.button-upload-image').onclick = this.requestUpload.bind(this);
+    // set gadget height.
+    this.vi.setHeight(600);
 
-      // set gadget height.
-      this.vi.setHeight(400);
-
-      // initially the gadget is already not empty (it has "green" set). If it were otherwise, we would have done this:
-      // this.vi.setEmpty();
-
-
-      //watch body height
-      this.vi.watchBodyHeight();
+    //watch body height and adjust gadget height accordingly
+    this.vi.watchBodyHeight();
   };
 
   Gadget.prototype.requestUpload = function() {
     this.vi.requestAsset({
-      attribute: 'tmpImage',
       type: 'image'
     });
   };
 
-  // Methods that respond to some player events. Other events will be ignored by this gadget.
-
-  Gadget.prototype.setEditable = function(jsonData) {
+  Gadget.prototype.editableChanged = function(jsonData) {
     this.isEditable = jsonData.editable;
 
     // some elements have class 'authoring-only' and need to be hidden when we are in non-editable mode.
-    var visibilityForAuthor = this.isEditable ? 'visible' : 'hidden';
-
-    // set visibility on all such elements.
-    var elementsAuthoringOnly = document.getElementsByClassName('authoring-only');
-    for (var i = 0; i < elementsAuthoringOnly.length; ++i) {
-      var item = elementsAuthoringOnly[i];
-      item.setAttribute('style', 'visibility: ' + visibilityForAuthor + ';');
+    // use css to hide those elements
+    if(this.isEditable) {
+      addClassToElement(this.el, 'editable');
+    } else {
+      removeClassFromElement(this.el, 'editable');
     }
   };
 
-  Gadget.prototype.setImagePath = function(jsonData) {
-    var imageUrl = jsonData.url;
-    // now we set the image src attribute to this url.
-    this.el.querySelector('.sample-image').setAttribute('src', imageUrl);
-  };
 
   Gadget.prototype.attributesChanged = function(jsonData) {
     // we expect only the attributes 'chosenColor', 'chosenWord', 'chosenImage'.
@@ -132,23 +118,28 @@
   };
 
   Gadget.prototype.learnerStateChanged = function(jsonData) {
-    // we expect only the attribute 'isBold'.
-    if (jsonData.isBold) {
+    if (jsonData && jsonData.isBold) {
       this.learnerState.isBold = jsonData.isBold;
       this.updateBoldWord();
     }
   };
 
+  Gadget.prototype.setImagePath = function(jsonData) {
+    var imageUrl = jsonData.url;
+    // now we set the image src attribute to this url.
+    this.el.querySelector('.sample-image').setAttribute('src', imageUrl);
+  };
+
   Gadget.prototype.updateBoldWord = function() {
     if (this.learnerState.isBold) {
-      addClassToElement(this.el, 'setBold');
+      addClassToElement(this.el, 'bold');
     } else {
-      removeClassFromElement(this.el, 'setBold');
+      removeClassFromElement(this.el, 'bold');
     }
   };
 
   Gadget.prototype.toggleBoldWord = function() {
-    this.learnerState.isBold = ! this.learnerState.isBold;
+    this.learnerState.isBold = !this.learnerState.isBold;
     this.vi.setLearnerState({
       isBold: this.learnerState.isBold
     });
@@ -157,7 +148,7 @@
 
   // Challenges API
   var challengesApi = new ChallengesIframeApi(function(response){
-    document.querySelector('.response').textContent = 'Score: ' + (response.scoring.totalScore || 0);
+    document.querySelector('.response').textContent = (response.scoring.totalScore || 0);
   });
 
   var challenges = [
