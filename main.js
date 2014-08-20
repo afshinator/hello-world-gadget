@@ -1,5 +1,5 @@
 (function(){
-  /* global VersalPlayerAPI, addClassToElement, removeClassFromElement, ChallengesIframeApi */
+  /* global VersalPlayerAPI, ChallengesIframeApi */
 
   // Declare a gadget class.
   var Gadget = function(options) {
@@ -101,10 +101,11 @@
 
     // some elements have class 'authoring-only' and need to be hidden when we are in non-editable mode.
     // use css to hide those elements
+    // IE10+
     if(this.isEditable) {
-      addClassToElement(this.el, 'editable');
+      this.el.classList.add('editable');
     } else {
-      removeClassFromElement(this.el, 'editable');
+      this.el.classList.remove('editable');
     }
   };
 
@@ -142,9 +143,9 @@
 
   Gadget.prototype.updateBoldWord = function() {
     if (this.learnerState.isBold) {
-      addClassToElement(this.el, 'bold');
+      this.el.classList.add('bold');
     } else {
-      removeClassFromElement(this.el, 'bold');
+      this.el.classList.remove('bold');
     }
   };
 
