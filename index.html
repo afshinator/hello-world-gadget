@@ -2,26 +2,44 @@
 <html>
 <head>
     <title>A "Hello, world" gadget</title>
+    <link rel="stylesheet" href="bower_components/normalize-css/normalize.css">
+    <link rel="stylesheet" href="bower_components/versal-gadget-theme/index.css">
     <link rel="stylesheet" href="./main.css">
+
     <script type="text/javascript" src="./bower_components/eventEmitter/EventEmitter.js"></script>
     <script type="text/javascript" src="./bower_components/versal-player-api/index.js"></script>
+    <script src="bower_components/underscore/underscore.js"></script>
+    <script src="bower_components/versal-challenges-js-api/challenges_iframe_api.js"></script>
 </head>
 <body>
-<div class="hello-container">
-    Hello, <span class="adjective shaded">green</span> world!
+<div class="hello-section">
+    <h3>Toggle between author view and learner view</h3>
+    <div class="hello-container">
+        Hello, <span class="adjective shaded">green</span> world!
+    </div>
+    <div class="explanation">
+        The learner can click on the shaded word and change the font style of the text.
+    </div>
+    <div class="explanation authoring-only">
+        The course author can choose the shaded word and its color, through a property sheet.
+    </div>
 </div>
 
-<div class="explanation">
-    The learner can click on the shaded word and change the font style of the text.
-</div>
-<div class="explanation authoring-only">
-    The course author can choose the shaded word and its color, through a property sheet.
+<div class="picture-section">
+    <h3>Upload an image</h3>
+    <div class="picture">
+        <button class="button-upload-image authoring-only">Upload</button>
+        <img class="sample-image" src="http://placehold.it/140x100">
+    </div>
 </div>
 
-<div class="picture">
-    <div class="button-upload-image authoring-only">Upload new image</div>
-    <img class="sample-image" src="">
-    <div class="image-caption">Sample image</div>
+<div class="challenge-section">
+    <h3>Challenge your learners</h3>
+    <div class='prompt'></div>
+    <div><textarea type='text' class='my-text-area' rows='1'></textarea></div>
+    <div class='response'></div>
+    <button class='submit-challenge'>Submit</button>
+    <div>&nbsp;</div>
 </div>
 
 <script type="text/javascript" src="./utilities.js"></script>

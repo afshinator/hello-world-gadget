@@ -80,6 +80,9 @@
       // initially the gadget is already not empty (it has "green" set). If it were otherwise, we would have done this:
       // this.vi.setEmpty();
 
+
+      //watch body height
+      this.vi.watchBodyHeight();
   };
 
   Gadget.prototype.requestUpload = function() {
@@ -151,6 +154,26 @@
     });
     this.updateBoldWord();
   };
+
+  // Challenges API
+  var challengesApi = new ChallengesIframeApi(function(response){
+    document.querySelector('.response').textContent = 'Score: ' + (response.scoring.totalScore || 0);
+  });
+
+  var challenges = [
+    {
+      prompt: 'What is the color of the sky?',
+      answers: 'blue',
+      scoring: 'strict'
+    }
+  ];
+
+  challengesApi.setChallenges(challenges);
+
+  document.querySelector('.prompt').textContent = challenges[0].prompt;
+  document.querySelector('.submit-challenge').addEventListener('click', function(){
+    challengesApi.scoreChallenges( [document.querySelector('.my-text-area').value] );
+  });
 
   // Finished with defining the gadget class.
 
