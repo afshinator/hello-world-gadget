@@ -4,14 +4,18 @@
   // Declare a gadget class.
   var Gadget = function(options) {
     // versal interface which fires most events
+    //   https://github.com/Versal/player-api
     this.vi = new VersalPlayerAPI();
 
-    // the main DOM element for attaching
+    // the main DOM element used in the gadget
+    //   - to be used as the container element for the gadget
     this.el = options.el;
-    // the selected word
+
+    // the selected word which displays the `chosenWord` attribute
     this.wordEl = this.el.querySelector('span.adjective');
 
-    // the gadget's configuration, consistent for anyone viewing each instance of this gadget
+    // the gadget's configuration:
+    //  - consistent for anyone viewing each instance of this gadget
     this.config = {
       chosenColor: 'green',
       chosenWord: 'green'
@@ -29,7 +33,10 @@
     this.initialize();
   };
 
-  // Need to configure the property sheet after attaching.
+  // Configure the property sheet after attaching gadget.
+  //   - these attributes will be accessible through
+  //   - the property sheet that displays on the gear icon
+  //     - Only when player recognizes gadget as editable
   Gadget.prototype.setupPropertySheet = function() {
     // set up a property sheet for word and color selection.
     this.vi.setPropertySheetAttributes({
@@ -47,13 +54,14 @@
 
     this.setupPropertySheet();
 
-    // tell Versal the gadget is ready for events
+    // Tell Versal the gadget is ready to begin communicating
+    //  - this will trigger the initial events for the gagdet
     this.vi.startListening();
 
     // add click listener to toggle bold font.
     this.wordEl.onclick = this.toggleBoldWord.bind(this);
 
-    // for assets
+    // set up a callback for asset uploads
     this.vi.on('assetSelected', function(assetData){
       var assetUrl = this.vi.assetUrl(assetData.asset.representations[0].id);
 
@@ -78,6 +86,7 @@
     this.vi.setHeight(600);
 
     //watch body height and adjust gadget height accordingly
+    // - Note that this will use document.body.offsetHeight to calculate the gadget's height
     this.vi.watchBodyHeight();
   };
 
@@ -101,7 +110,8 @@
 
 
   Gadget.prototype.attributesChanged = function(jsonData) {
-    // we expect only the attributes 'chosenColor', 'chosenWord', 'chosenImage'.
+    // we expect to receive some subset of the attributes:
+    //   'chosenColor', 'chosenWord', 'chosenImage'.
     if (jsonData.chosenColor) {
       this.config.chosenColor = jsonData.chosenColor;
       this.wordEl.setAttribute('style', 'color: ' + this.config.chosenColor);
@@ -126,7 +136,7 @@
 
   Gadget.prototype.setImagePath = function(jsonData) {
     var imageUrl = jsonData.url;
-    // now we set the image src attribute to this url.
+    // Set the image src attribute to this url.
     this.el.querySelector('.sample-image').setAttribute('src', imageUrl);
   };
 
@@ -140,13 +150,22 @@
 
   Gadget.prototype.toggleBoldWord = function() {
     this.learnerState.isBold = !this.learnerState.isBold;
+
     this.vi.setLearnerState({
       isBold: this.learnerState.isBold
     });
+
     this.updateBoldWord();
   };
 
-  // Challenges API
+  /*
+   * END GADGET FUNCTIONS
+   */
+
+
+  /*
+   * Challenges API
+   */
   var challengesApi = new ChallengesIframeApi(function(response){
     document.querySelector('.response').textContent = (response.scoring.totalScore || 0);
   });
@@ -159,6 +178,7 @@
     }
   ];
 
+  // Set Challenges to default
   challengesApi.setChallenges(challenges);
 
   document.querySelector('.prompt').textContent = challenges[0].prompt;
@@ -166,10 +186,11 @@
     challengesApi.scoreChallenges( [document.querySelector('.my-text-area').value] );
   });
 
-  // Finished with defining the gadget class.
 
-  // Instantiate the gadget, pass the DOM element, start listening to events.
+
+  // Instantiate the gadget, passing it the DOM element
   new Gadget({ el: document.querySelector('body') });
+
   // This gadget instance will remain active because it has added itself as a listener to the window.
 
 })();
