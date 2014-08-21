@@ -1,7 +1,15 @@
-Hello, World gadget
+Hello World gadget
 ==================
-The hello world gadget has taken some liberty with the typical hello
-world format.
+
+## Basic functions
+- Authors can change text, text color and upload an image
+- Learners can view the text, image and take a quiz
+
+## Tech details
+The hello world gadget has three sections
+- Toggle between author view and learner view
+- Upload an image
+- Quiz
 
 This gadget serves as an example for a few types of interaction between
 the gadget and the course player via the
@@ -17,15 +25,14 @@ Please see the [gadget developer
 intro](https://github.com/Versal/gadget-dev-intro/) for more information
 about gadget development.
 
-### Build Steps
+## Build Steps
 
 ```
 bower install
 ```
 
-### Preview gadget
+## Preview gadget
 
 ```
 versal preview
 ```
-
