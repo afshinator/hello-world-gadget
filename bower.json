@@ -14,8 +14,6 @@
     "tests"
   ],
   "dependencies": {
-    "versal-player-api": "~0.3.3",
-    "versal-challenges-js-api": "*",
-    "versal-gadget-theme": "~0.3.0"
+    "versal-gadget-api": "0.0.1"
   }
 }
