@@ -3,10 +3,9 @@ Hello, World gadget
 The hello world gadget has taken some liberty with the typical hello
 world format.
 
-This gadget serves as an example for a few types of interaction between
-the gadget and the course player via the
-[versal-player-api](https://github.com/Versal/player-api), which is
-available as a bower component under that name.
+This gadget serves as an example for using the
+[versal-gadget-api](https://github.com/Versal/versal-gadget-api),
+which provides some convenience libraries and basic styles.
 
 Types of interactions:
   - Asset uploading
