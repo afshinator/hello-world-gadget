@@ -5,7 +5,7 @@
   var Gadget = function(options) {
     // versal interface which fires most events
     //   https://github.com/Versal/player-api
-    this.vi = new VersalPlayerAPI();
+    this.player = new VersalPlayerAPI();
 
     // the main DOM element used in the gadget
     //   - to be used as the container element for the gadget
@@ -39,7 +39,7 @@
   //     - Only when player recognizes gadget as editable
   Gadget.prototype.setupPropertySheet = function() {
     // set up a property sheet for word and color selection.
-    this.vi.setPropertySheetAttributes({
+    this.player.setPropertySheetAttributes({
       chosenColor: { type: 'Color' },
       chosenWord: { type: 'Text' }
     });
@@ -48,22 +48,22 @@
   // Initialize: before the gadget is attached to the lesson's DOM.
   Gadget.prototype.initialize = function() {
     // listen to events
-    this.vi.on('editableChanged', this.editableChanged.bind(this));
-    this.vi.on('attributesChanged', this.attributesChanged.bind(this));
-    this.vi.on('learnerStateChanged', this.learnerStateChanged.bind(this));
+    this.player.on('editableChanged', this.editableChanged.bind(this));
+    this.player.on('attributesChanged', this.attributesChanged.bind(this));
+    this.player.on('learnerStateChanged', this.learnerStateChanged.bind(this));
 
     this.setupPropertySheet();
 
     // Tell Versal the gadget is ready to begin communicating
     //  - this will trigger the initial events for the gagdet
-    this.vi.startListening();
+    this.player.startListening();
 
     // add click listener to toggle bold font.
     this.wordEl.onclick = this.toggleBoldWord.bind(this);
 
     // set up a callback for asset uploads
-    this.vi.on('assetSelected', function(assetData){
-      var assetUrl = this.vi.assetUrl(assetData.asset.representations[0].id);
+    this.player.on('assetSelected', function(assetData){
+      var assetUrl = this.player.assetUrl(assetData.asset.representations[0].id);
 
       //change local image
       this.setImagePath({
@@ -71,7 +71,7 @@
       });
 
       //persist
-      this.vi.setAttributes({
+      this.player.setAttributes({
         chosenImage : {
           url: assetUrl,
           assetObj: assetData
@@ -83,15 +83,15 @@
     this.el.querySelector('.button-upload-image').onclick = this.requestUpload.bind(this);
 
     // set gadget height.
-    this.vi.setHeight(600);
+    this.player.setHeight(600);
 
     //watch body height and adjust gadget height accordingly
     // - Note that this will use document.body.offsetHeight to calculate the gadget's height
-    this.vi.watchBodyHeight();
+    this.player.watchBodyHeight();
   };
 
   Gadget.prototype.requestUpload = function() {
-    this.vi.requestAsset({
+    this.player.requestAsset({
       type: 'image'
     });
   };
@@ -152,7 +152,7 @@
   Gadget.prototype.toggleBoldWord = function() {
     this.learnerState.isBold = !this.learnerState.isBold;
 
-    this.vi.setLearnerState({
+    this.player.setLearnerState({
       isBold: this.learnerState.isBold
     });
 
