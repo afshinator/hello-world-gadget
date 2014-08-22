@@ -62,21 +62,11 @@
     this.wordEl.onclick = this.toggleBoldWord.bind(this);
 
     // set up a callback for asset uploads
-    this.player.on('assetSelected', function(assetData){
-      var assetUrl = this.player.assetUrl(assetData.asset.representations[0].id);
-
-      //change local image
-      this.setImagePath({
-        url: assetUrl
-      });
+    this.player.on('assetSelected', function(assetData) {
+      var imageUrl = this.player.assetUrl(assetData.asset.representations[0].id);
 
       //persist
-      this.player.setAttributes({
-        chosenImage : {
-          url: assetUrl,
-          assetObj: assetData
-        }
-      });
+      this.player.setAttributes({imageUrl : imageUrl});
     }.bind(this));
 
     // add click listener to upload new asset.
@@ -91,9 +81,7 @@
   };
 
   Gadget.prototype.requestUpload = function() {
-    this.player.requestAsset({
-      type: 'image'
-    });
+    this.player.requestAsset({type: 'image'});
   };
 
   Gadget.prototype.editableChanged = function(jsonData) {
@@ -121,9 +109,10 @@
       this.config.chosenWord = jsonData.chosenWord;
       this.wordEl.innerHTML = this.config.chosenWord;
     }
-    if (jsonData.chosenImage) {
-      this.config.asset = jsonData.chosenImage;
-      this.setImagePath(jsonData.chosenImage);
+    if (jsonData.imageUrl) {
+      this.config.imageUrl = jsonData.imageUrl;
+      // Set the image src attribute to this url.
+      this.el.querySelector('.sample-image').setAttribute('src', this.config.imageUrl);
     }
 
   };
@@ -133,12 +122,6 @@
       this.learnerState.isBold = jsonData.isBold;
       this.updateBoldWord();
     }
-  };
-
-  Gadget.prototype.setImagePath = function(jsonData) {
-    var imageUrl = jsonData.url;
-    // Set the image src attribute to this url.
-    this.el.querySelector('.sample-image').setAttribute('src', imageUrl);
   };
 
   Gadget.prototype.updateBoldWord = function() {
