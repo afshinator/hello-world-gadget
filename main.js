@@ -106,14 +106,8 @@
     }
   };
 
-  Gadget.prototype.learnerStateChanged = function(jsonData) {
-    if (jsonData && jsonData.isBold) {
-      this.learnerState.isBold = jsonData.isBold;
-      this.updateBoldWord();
-    }
-  };
-
-  Gadget.prototype.updateBoldWord = function() {
+  Gadget.prototype.learnerStateChanged = function(attributes) {
+    this.learnerState.isBold = attributes.isBold;
     if (this.learnerState.isBold) {
       this.el.classList.add('bold');
     } else {
@@ -122,13 +116,9 @@
   };
 
   Gadget.prototype.toggleBoldWord = function() {
-    this.learnerState.isBold = !this.learnerState.isBold;
-
     this.player.setLearnerState({
-      isBold: this.learnerState.isBold
+      isBold: !this.learnerState.isBold
     });
-
-    this.updateBoldWord();
   };
 
   /*
