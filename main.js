@@ -1,5 +1,5 @@
 (function(){
-  /* global VersalPlayerAPI, ChallengesIframeApi */
+  /* global VersalPlayerAPI, VersalChallengesAPI */
 
   // Declare a gadget class.
   var Gadget = function(options) {
@@ -167,7 +167,7 @@
   /*
    * Challenges API
    */
-  var challengesApi = new ChallengesIframeApi(function(response){
+  var challengesApi = new VersalChallengesAPI(function(response){
     document.querySelector('.response').textContent = (response.scoring.totalScore || 0);
   });
 
