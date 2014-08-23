@@ -14,13 +14,6 @@
     // the selected word which displays the `chosenWord` attribute
     this.wordEl = this.el.querySelector('span.adjective');
 
-    // the gadget's configuration:
-    //  - consistent for anyone viewing each instance of this gadget
-    this.config = {
-      chosenColor: 'green',
-      chosenWord: 'green'
-    };
-
     // Internal state of the gadget. Only authors can edit gadgets
     //   - When editing, config can be changed by the author
     this.isEditable = false;
@@ -98,33 +91,23 @@
   };
 
 
-  Gadget.prototype.attributesChanged = function(jsonData) {
+  Gadget.prototype.attributesChanged = function(attributes) {
     // we expect to receive some subset of the attributes:
     //   'chosenColor', 'chosenWord', 'chosenImage'.
-    if (jsonData.chosenColor) {
-      this.config.chosenColor = jsonData.chosenColor;
-      this.wordEl.setAttribute('style', 'color: ' + this.config.chosenColor);
+    if (attributes.chosenColor) {
+      this.wordEl.setAttribute('style', 'color: ' + attributes.chosenColor);
     }
-    if (jsonData.chosenWord) {
-      this.config.chosenWord = jsonData.chosenWord;
-      this.wordEl.innerHTML = this.config.chosenWord;
+    if (attributes.chosenWord) {
+      this.wordEl.innerHTML = attributes.chosenWord;
     }
-    if (jsonData.imageUrl) {
-      this.config.imageUrl = jsonData.imageUrl;
+    if (attributes.imageUrl) {
       // Set the image src attribute to this url.
-      this.el.querySelector('.sample-image').setAttribute('src', this.config.imageUrl);
-    }
-
-  };
-
-  Gadget.prototype.learnerStateChanged = function(jsonData) {
-    if (jsonData && jsonData.isBold) {
-      this.learnerState.isBold = jsonData.isBold;
-      this.updateBoldWord();
+      this.el.querySelector('.sample-image').setAttribute('src', attributes.imageUrl);
     }
   };
 
-  Gadget.prototype.updateBoldWord = function() {
+  Gadget.prototype.learnerStateChanged = function(attributes) {
+    this.learnerState.isBold = attributes.isBold;
     if (this.learnerState.isBold) {
       this.el.classList.add('bold');
     } else {
@@ -133,13 +116,9 @@
   };
 
   Gadget.prototype.toggleBoldWord = function() {
-    this.learnerState.isBold = !this.learnerState.isBold;
-
     this.player.setLearnerState({
-      isBold: this.learnerState.isBold
+      isBold: !this.learnerState.isBold
     });
-
-    this.updateBoldWord();
   };
 
   /*
