@@ -21,7 +21,7 @@ Types of interactions:
   - setLearnerState / onLearnerStateChanged
 
 Please see the [gadget developer
-intro](https://github.com/Versal/gadget-dev-intro/) for more information
+intro](https://versal.com/c/gadgets) for more information
 about gadget development.
 
 ## Build Steps
